@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Role\RoleController;
+use App\Http\Controllers\Api\Profile\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes (Public)
@@ -17,6 +18,13 @@ Route::prefix('auth')->group(function () {
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::prefix('auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
+    });
+
+    // Profile Routes
+    Route::prefix('profile')->group(function () {
+        Route::get('/', [ProfileController::class, 'profile']);
+        Route::post('/', [ProfileController::class, 'update']);
+        Route::post('/change-password', [ProfileController::class, 'changePassword']);
     });
 
     // Roles Routes
