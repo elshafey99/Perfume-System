@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Role\RoleController;
 use App\Http\Controllers\Api\Profile\ProfileController;
 use App\Http\Controllers\Api\Category\CategoryController;
+use App\Http\Controllers\Api\User\UserController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes (Public)
@@ -48,5 +49,15 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::put('/{id}', [RoleController::class, 'update']);
         Route::patch('/{id}', [RoleController::class, 'update']);
         Route::delete('/{id}', [RoleController::class, 'destroy']);
+    });
+
+    // Users Routes (Employees & Admins)
+    Route::prefix('users')->group(function () {
+        Route::get('/', [UserController::class, 'index']);
+        Route::post('/', [UserController::class, 'store']);
+        Route::get('/{id}', [UserController::class, 'show']);
+        Route::post('/{id}', [UserController::class, 'update']);
+        Route::post('/{id}/status', [UserController::class, 'changeStatus']);
+        Route::delete('/{id}', [UserController::class, 'destroy']);
     });
 });

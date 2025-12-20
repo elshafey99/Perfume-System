@@ -30,7 +30,8 @@ class UserResource extends JsonResource
                     'permissions' => json_decode($this->role->permession, true) ?? [],
                 ];
             }),
+            'created_at' => $this->created_at?->format('Y-m-d H:i:s'),
+            'updated_at' => $this->updated_at?->format('Y-m-d H:i:s'),
         ];
     }
 }
-
