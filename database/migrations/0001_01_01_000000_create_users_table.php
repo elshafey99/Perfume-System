@@ -16,10 +16,14 @@ return new class extends Migration
             $table->string('image')->default('uploads/images/image.png')->nullable();
             $table->string('name');
             $table->string('phone')->unique()->nullable();
-            $table->boolean('status')->default(1);
             $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('position')->nullable();
+            $table->enum('type', ['admin', 'employee'])->default('employee');
+            $table->unsignedBigInteger('role_id')->nullable();
+            $table->foreign('role_id')->references('id')->on('roles')->cascadeOnDelete();
+            $table->boolean('status')->default(1);
+            //$table->timestamp('email_verified_at')->nullable();
             $table->string('verification_code')->nullable();
             $table->timestamp('verification_code_expires_at')->nullable();
             $table->rememberToken();

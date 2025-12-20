@@ -33,18 +33,19 @@
 ### المرحلة 1: الأساسيات والبنية التحتية (2-3 أسابيع)
 
 #### الأسبوع 2-3: البنية التحتية
-- [ ] إنشاء Migrations لقاعدة البيانات
+- [x] إنشاء Migrations لقاعدة البيانات ✅
 - [ ] إنشاء Models الأساسية
 - [ ] إعداد نظام المصادقة (Auth)
 - [ ] إعداد نظام الصلاحيات (Spatie Permissions)
-- [ ] إعداد Localization (عربي/إنجليزي)
 - [ ] إعداد File Storage
 - [ ] إعداد Queue System
+- [ ] تطوير APIs (10 أيام) - انظر [API_10_DAYS_PLAN.md](./API_10_DAYS_PLAN.md)
 
 **المخرجات:**
-- قاعدة البيانات جاهزة
+- قاعدة البيانات جاهزة ✅
 - Models الأساسية
 - نظام المصادقة والصلاحيات
+- APIs كاملة
 
 #### الأسبوع 4: واجهة Dashboard الأساسية
 - [ ] تصميم Layout الأساسي
@@ -243,25 +244,33 @@
 - [ ] Purchase
 - [ ] PurchaseItem
 - [ ] Expense
-- [ ] Employee
-- [ ] Branch
-- [ ] BranchTransfer
+- [ ] Stocktaking
+- [ ] StocktakingItem
+- [ ] Return
 - [ ] LoyaltyPoint
 - [ ] Notification
 - [ ] AuditLog
 
-#### Controllers المطلوبة:
-- [ ] ProductController
-- [ ] CategoryController
-- [ ] CompositionController
-- [ ] SaleController
-- [ ] CustomerController
-- [ ] InventoryController
-- [ ] SupplierController
-- [ ] PurchaseController
-- [ ] ExpenseController
-- [ ] ReportController
-- [ ] DashboardController
+**ملاحظة:** استخدام جدول `users` الموجود للموظفين بدلاً من Employee model
+
+#### Controllers المطلوبة (API):
+- [ ] Api/CategoryController
+- [ ] Api/ProductController
+- [ ] Api/SupplierController
+- [ ] Api/CompositionController
+- [ ] Api/SaleController
+- [ ] Api/CustomerController
+- [ ] Api/InventoryController
+- [ ] Api/PurchaseController
+- [ ] Api/ExpenseController
+- [ ] Api/StocktakingController
+- [ ] Api/ReturnController
+- [ ] Api/NotificationController
+- [ ] Api/ReportController
+- [ ] Api/DashboardController
+- [ ] Api/AuditLogController
+
+**انظر [API_10_DAYS_PLAN.md](./API_10_DAYS_PLAN.md) للتفاصيل الكاملة**
 
 #### Services المطلوبة:
 - [ ] InventoryService (تحديث المخزون)

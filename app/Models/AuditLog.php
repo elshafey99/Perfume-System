@@ -1,0 +1,50 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+
+class AuditLog extends Model
+{
+    use HasFactory;
+
+    public $timestamps = false;
+
+    protected $fillable = [
+        'user_type',
+        'user_id',
+        'action',
+        'model_type',
+        'model_id',
+        'old_values',
+        'new_values',
+        'ip_address',
+        'user_agent',
+        'created_at',
+    ];
+
+    protected $casts = [
+        'old_values' => 'array',
+        'new_values' => 'array',
+        'created_at' => 'datetime',
+    ];
+
+    /**
+     * Get the user model (polymorphic)
+     */
+    public function user(): MorphTo
+    {
+        return $this->morphTo('user');
+    }
+
+    /**
+     * Get the model that was audited (polymorphic)
+     */
+    public function model(): MorphTo
+    {
+        return $this->morphTo('model');
+    }
+}
+

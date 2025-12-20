@@ -31,8 +31,7 @@ Branches ──< Inventory
 ```sql
 CREATE TABLE categories (
     id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,              -- الاسم بالعربية
-    name_en VARCHAR(255) NULL,               -- الاسم بالإنجليزية
+    name VARCHAR(255) NOT NULL,              -- الاسم
     parent_id BIGINT UNSIGNED NULL,          -- للفئات الفرعية
     icon VARCHAR(255) NULL,                  -- أيقونة الفئة
     description TEXT NULL,
@@ -46,6 +45,8 @@ CREATE TABLE categories (
     INDEX idx_is_active (is_active)
 );
 ```
+
+**ملاحظة:** تم إزالة `name_en` - النظام يدعم العربية فقط حالياً
 
 **أنواع الفئات:**
 - عطور جاهزة (Ready-made Perfumes)
@@ -64,7 +65,6 @@ CREATE TABLE categories (
 CREATE TABLE products (
     id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,
-    name_en VARCHAR(255) NULL,
     sku VARCHAR(100) UNIQUE NULL,             -- Stock Keeping Unit
     barcode VARCHAR(100) UNIQUE NULL,        -- الباركود
     category_id BIGINT UNSIGNED NOT NULL,
@@ -122,7 +122,6 @@ CREATE TABLE products (
 CREATE TABLE compositions (
     id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(255) NOT NULL,               -- اسم التركيبة
-    name_en VARCHAR(255) NULL,
     code VARCHAR(100) UNIQUE NULL,           -- كود التركيبة
     
     -- معلومات التركيبة
@@ -230,8 +229,7 @@ CREATE TABLE sales (
     
     -- العلاقات
     customer_id BIGINT UNSIGNED NULL,             -- العميل (قد يكون null للعملاء غير المسجلين)
-    employee_id BIGINT UNSIGNED NOT NULL,         -- الموظف/البائع
-    branch_id BIGINT UNSIGNED NULL,              -- الفرع
+    employee_id BIGINT UNSIGNED NOT NULL,         -- الموظف/البائع (مرتبط بجدول users)
     
     -- المبالغ
     subtotal DECIMAL(10, 2) DEFAULT 0,           -- المجموع الفرعي
@@ -257,8 +255,7 @@ CREATE TABLE sales (
     updated_at TIMESTAMP NULL,
     
     FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE SET NULL,
-    FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE RESTRICT,
-    FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE SET NULL,
+    FOREIGN KEY (employee_id) REFERENCES users(id) ON DELETE RESTRICT,
     INDEX idx_invoice_number (invoice_number),
     INDEX idx_customer_id (customer_id),
     INDEX idx_employee_id (employee_id),
@@ -331,7 +328,7 @@ CREATE TABLE returns (
     
     FOREIGN KEY (sale_id) REFERENCES sales(id) ON DELETE RESTRICT,
     FOREIGN KEY (sale_item_id) REFERENCES sale_items(id) ON DELETE SET NULL,
-    FOREIGN KEY (processed_by) REFERENCES employees(id) ON DELETE SET NULL,
+    FOREIGN KEY (processed_by) REFERENCES users(id) ON DELETE SET NULL,
     INDEX idx_sale_id (sale_id),
     INDEX idx_status (status)
 );
@@ -345,10 +342,9 @@ CREATE TABLE returns (
 CREATE TABLE inventory_transactions (
     id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     product_id BIGINT UNSIGNED NOT NULL,
-    branch_id BIGINT UNSIGNED NULL,
     
     -- نوع الحركة
-    type ENUM('sale', 'purchase', 'return', 'adjustment', 'transfer_in', 'transfer_out', 'composition', 'waste') NOT NULL,
+    type ENUM('sale', 'purchase', 'return', 'adjustment', 'composition', 'waste') NOT NULL,
     quantity DECIMAL(10, 4) NOT NULL,             -- الكمية (موجب للإضافة، سالب للخصم)
     unit ENUM('piece', 'gram', 'ml', 'tola', 'quarter_tola') NOT NULL,
     
@@ -368,8 +364,7 @@ CREATE TABLE inventory_transactions (
     updated_at TIMESTAMP NULL,
     
     FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE RESTRICT,
-    FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE SET NULL,
-    FOREIGN KEY (created_by) REFERENCES employees(id) ON DELETE SET NULL,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
     INDEX idx_product_id (product_id),
     INDEX idx_type (type),
     INDEX idx_reference (reference_type, reference_id),
@@ -411,7 +406,6 @@ CREATE TABLE purchases (
     id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
     invoice_number VARCHAR(100) UNIQUE NULL,     -- رقم فاتورة المورد
     supplier_id BIGINT UNSIGNED NOT NULL,
-    branch_id BIGINT UNSIGNED NULL,
     
     -- المبالغ
     subtotal DECIMAL(10, 2) DEFAULT 0,
@@ -432,8 +426,7 @@ CREATE TABLE purchases (
     updated_at TIMESTAMP NULL,
     
     FOREIGN KEY (supplier_id) REFERENCES suppliers(id) ON DELETE RESTRICT,
-    FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE SET NULL,
-    FOREIGN KEY (created_by) REFERENCES employees(id) ON DELETE SET NULL,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
     INDEX idx_supplier_id (supplier_id),
     INDEX idx_purchase_date (purchase_date),
     INDEX idx_status (status)
@@ -478,14 +471,12 @@ CREATE TABLE expenses (
     expense_date DATE NOT NULL,
     receipt_image VARCHAR(255) NULL,              -- صورة الإيصال
     
-    branch_id BIGINT UNSIGNED NULL,
     created_by BIGINT UNSIGNED NULL,
     
     created_at TIMESTAMP NULL,
     updated_at TIMESTAMP NULL,
     
-    FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE SET NULL,
-    FOREIGN KEY (created_by) REFERENCES employees(id) ON DELETE SET NULL,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
     INDEX idx_category (category),
     INDEX idx_expense_date (expense_date),
     INDEX idx_branch_id (branch_id)
@@ -496,97 +487,7 @@ CREATE TABLE expenses (
 
 ### 14. جدول الموظفين (employees)
 
-```sql
-CREATE TABLE employees (
-    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    user_id BIGINT UNSIGNED NULL,                 -- ربط بحساب المستخدم (إن وجد)
-    branch_id BIGINT UNSIGNED NULL,
-    
-    -- معلومات الموظف
-    name VARCHAR(255) NOT NULL,
-    phone VARCHAR(20) NULL,
-    email VARCHAR(255) NULL,
-    position VARCHAR(100) NULL,                   -- المنصب
-    hire_date DATE NULL,
-    salary DECIMAL(10, 2) NULL,
-    
-    -- الصلاحيات (JSON)
-    permissions JSON NULL,                         -- ['can_discount', 'can_view_reports', etc.]
-    
-    -- الحالة
-    is_active BOOLEAN DEFAULT TRUE,
-    
-    created_at TIMESTAMP NULL,
-    updated_at TIMESTAMP NULL,
-    
-    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
-    FOREIGN KEY (branch_id) REFERENCES branches(id) ON DELETE SET NULL,
-    INDEX idx_user_id (user_id),
-    INDEX idx_branch_id (branch_id),
-    INDEX idx_is_active (is_active)
-);
-```
-
----
-
-### 15. جدول الفروع (branches)
-
-```sql
-CREATE TABLE branches (
-    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(255) NOT NULL,
-    code VARCHAR(50) UNIQUE NULL,                 -- كود الفرع
-    address TEXT NULL,
-    phone VARCHAR(20) NULL,
-    email VARCHAR(255) NULL,
-    is_main BOOLEAN DEFAULT FALSE,                -- هل هو الفرع الرئيسي؟
-    is_active BOOLEAN DEFAULT TRUE,
-    
-    created_at TIMESTAMP NULL,
-    updated_at TIMESTAMP NULL,
-    
-    INDEX idx_is_main (is_main),
-    INDEX idx_is_active (is_active)
-);
-```
-
----
-
-### 16. جدول النقل بين الفروع (branch_transfers)
-
-```sql
-CREATE TABLE branch_transfers (
-    id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    transfer_number VARCHAR(100) UNIQUE NOT NULL,
-    from_branch_id BIGINT UNSIGNED NOT NULL,
-    to_branch_id BIGINT UNSIGNED NOT NULL,
-    product_id BIGINT UNSIGNED NOT NULL,
-    
-    quantity DECIMAL(10, 4) NOT NULL,
-    unit ENUM('piece', 'gram', 'ml', 'tola', 'quarter_tola') NOT NULL,
-    
-    transfer_date DATE NOT NULL,
-    received_date DATE NULL,
-    
-    status ENUM('pending', 'in_transit', 'received', 'cancelled') DEFAULT 'pending',
-    notes TEXT NULL,
-    
-    created_by BIGINT UNSIGNED NULL,
-    received_by BIGINT UNSIGNED NULL,
-    
-    created_at TIMESTAMP NULL,
-    updated_at TIMESTAMP NULL,
-    
-    FOREIGN KEY (from_branch_id) REFERENCES branches(id) ON DELETE RESTRICT,
-    FOREIGN KEY (to_branch_id) REFERENCES branches(id) ON DELETE RESTRICT,
-    FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE RESTRICT,
-    FOREIGN KEY (created_by) REFERENCES employees(id) ON DELETE SET NULL,
-    FOREIGN KEY (received_by) REFERENCES employees(id) ON DELETE SET NULL,
-    INDEX idx_from_branch_id (from_branch_id),
-    INDEX idx_to_branch_id (to_branch_id),
-    INDEX idx_status (status)
-);
-```
+**ملاحظة:** تم استخدام جدول `users` الموجود بدلاً من إنشاء جدول employees منفصل. الموظفون هم مستخدمون في النظام مع `role_id` و `position`.
 
 ---
 
@@ -621,7 +522,7 @@ CREATE TABLE loyalty_points (
 ```sql
 CREATE TABLE notifications (
     id BIGINT UNSIGNED PRIMARY KEY AUTO_INCREMENT,
-    type ENUM('low_stock', 'birthday', 'loyalty_reminder', 'promotion', 'system') NOT NULL,
+    type ENUM('low_stock', 'birthday', 'loyalty_reminder', 'system', 'stocktaking') NOT NULL,
     title VARCHAR(255) NOT NULL,
     message TEXT NOT NULL,
     
@@ -705,9 +606,17 @@ Supplier (1) ──< Purchases (N) ──< PurchaseItems (N) >── Products (N
 3. **التكلفة:** يتم حسابها تلقائياً للتركيبات بناءً على أسعار المواد الخام
 4. **الباركود:** يتم توليده تلقائياً للتركيبات المخصصة
 5. **النسخ الاحتياطي:** يجب عمل نسخ احتياطي يومي لقاعدة البيانات
+6. **الموظفون:** يتم استخدام جدول `users` الموجود بدلاً من جدول employees منفصل
+7. **الفروع:** النظام حالياً يدعم فرع واحد فقط (لا توجد جداول branches)
+8. **الترجمة:** تم إزالة `name_en` من الجداول - النظام يدعم العربية فقط حالياً
 
 ---
 
 **تاريخ الإنشاء:** 2025-01-27  
-**آخر تحديث:** 2025-01-27
+**آخر تحديث:** 2025-01-27  
+**التحديثات:**
+- إزالة `name_en` من categories, products, compositions
+- استخدام `users` بدلاً من `employees`
+- إزالة جداول branches و branch_transfers (نظام فرع واحد)
+- إزالة جداول promotions و coupons (غير مطلوبة)
 

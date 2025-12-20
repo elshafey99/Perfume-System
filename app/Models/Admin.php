@@ -23,10 +23,7 @@ class Admin extends Authenticatable
         'password',
         'role_id',
         'status',
-        'facebook',
-        'x_url',
-        'linkedin',
-        'whatsapp',
+        'phone',
     ];
 
     /**
@@ -68,10 +65,5 @@ class Admin extends Authenticatable
                 return true;
             }
         }
-    }
-
-    public function approvedProperties()
-    {
-        return $this->hasMany(Property::class, 'approved_by_admin_id');
     }
 }
