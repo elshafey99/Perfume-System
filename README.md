@@ -1,15 +1,51 @@
-<p align="center"><strong>Alqima Center ERP API</strong> — Laravel 11 (PHP 8.2)</p>
+<p align="center"><strong>Perfume Shop Management System</strong> — Laravel 11 (PHP 8.2)</p>
 
 ## Overview
 
-Alqima is a RESTful API for managing an educational center: students, classrooms, study materials, and packages. It is built on Laravel 11, uses Sanctum for authentication, and follows a resource/service-based structure.
+نظام إدارة محل عطور متكامل (Perfume Shop Management System) مبني على Laravel 11. النظام يدعم إدارة المخزون المعقدة (وحدات قياس متعددة)، عمليات تركيب وخلط العطور، نقطة البيع (POS) المتقدمة، إدارة علاقات العملاء (CRM)، والتقارير المالية.
+
+**A comprehensive Perfume Shop Management System built on Laravel 11. The system supports complex inventory management (multiple measurement units), perfume composition and mixing operations, advanced POS, CRM, and financial reports.**
+
+## 📚 Documentation
+
+تم إعداد تحليل شامل ومتكامل للمشروع. يرجى مراجعة الملفات التالية:
+
+**Comprehensive project analysis has been prepared. Please review the following files:**
+
+- **[PROJECT_SUMMARY.md](./PROJECT_SUMMARY.md)** - ملخص المشروع / Project Summary
+- **[REQUIREMENTS_ANALYSIS.md](./REQUIREMENTS_ANALYSIS.md)** - تحليل المتطلبات / Requirements Analysis
+- **[DATABASE_DESIGN.md](./DATABASE_DESIGN.md)** - تصميم قاعدة البيانات / Database Design
+- **[FEATURES_GAP_ANALYSIS.md](./FEATURES_GAP_ANALYSIS.md)** - تحليل الفجوات والميزات / Features Gap Analysis
+- **[DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md)** - خطة التطوير / Development Plan
+
+## 🎯 Key Features
+
+### Core Features:
+- ✅ **إدارة المخزون** - Inventory Management (multiple units: gram, ml, tola, piece)
+- ✅ **نظام البيع (POS)** - Point of Sale System (touch-friendly interface)
+- ✅ **إدارة التركيبات** - Perfume Composition Management (auto-deduct ingredients)
+- ✅ **نظام CRM** - Customer Relationship Management (preferences, loyalty points)
+- ✅ **المحاسبة والتقارير** - Accounting & Financial Reports (VAT, profitability)
+- ✅ **ميزة الوصفات السحرية** - Magic Recipes Feature (famous perfume formulas)
+- ✅ **لوحة التحكم** - Dashboard (real-time analytics)
+- ✅ **جرد المخزون بالذكاء الاصطناعي** - AI-powered Inventory Management
+
+### Missing Features (High Priority):
+- 🔴 إدارة الموردين - Suppliers Management
+- 🔴 نظام الجرد الدوري - Stocktaking System
+- 🔴 نظام النسخ الاحتياطي - Backup System
+- 🔴 نظام Audit Log - Audit Logging System
 
 ## Tech Stack
 
 -   PHP 8.2
 -   Laravel 11.31
--   Laravel Sanctum
--   Spatie Laravel Permission
+-   Laravel Sanctum (API Authentication)
+-   Spatie Laravel Permission (Role & Permissions)
+-   Livewire (UI Components)
+-   MySQL (Database)
+-   Tailwind CSS (Styling)
+-   Chart.js (Charts & Analytics)
 
 ## Requirements
 
@@ -60,77 +96,36 @@ Most routes are protected by `auth:sanctum`.
 -   Login: `POST /api/login` → returns a token. Use it as `Authorization: Bearer <token>`.
 -   Logout: `GET /api/logout`.
 
-## API Overview
+## 🗄️ Database Structure
 
-### Packages
+The system includes 19 main tables:
 
-Packages belong to a classroom and can contain multiple study materials via the pivot table `package_materials`.
+- **Products & Categories** - إدارة المنتجات والفئات
+- **Compositions & Ingredients** - التركيبات ومكوناتها
+- **Sales & Customers** - المبيعات والعملاء
+- **Inventory Transactions** - حركات المخزون
+- **Suppliers & Purchases** - الموردين والمشتريات
+- **Employees & Branches** - الموظفين والفروع
+- **Loyalty Points & Notifications** - نقاط الولاء والإشعارات
+- **Audit Logs** - سجل العمليات
 
-Routes
+For detailed database design, see [DATABASE_DESIGN.md](./DATABASE_DESIGN.md)
 
-```text
-GET    /api/packages                # paginated index (?per_page)
-POST   /api/packages                # create a package
-GET    /api/packages/{package}      # show one (implicit model binding, numeric)
-POST   /api/packages/{package}      # update
-DELETE /api/packages/{package}      # delete
-GET    /api/packages/all_materials  # list all study materials (helper)
-```
+## 📅 Development Timeline
 
-Create/Update payload
+**Estimated Duration:** 12-16 weeks
 
-```json
-{
-    "name": "Package A",
-    "class_room_id": 1,
-    "class_price": 100,
-    "teacher_price": 50,
-    "status": 1,
-    "notes": "optional",
-    "study_material_ids": [1, 2, 3]
-}
-```
+- Week 1: Setup & Preparation
+- Week 2-4: Infrastructure & Dashboard
+- Week 5-6: Inventory Management
+- Week 7-10: POS System
+- Week 11-12: CRM & Loyalty
+- Week 13-14: Accounting & Reports
+- Week 15-16: Advanced Features
+- Week 17-18: Missing Features (High Priority)
+- Week 19-20: Testing & Optimization
 
-Typical response shape (via `HttpResponse` trait)
-
-```json
-{
-    "data": {
-        /* resource or collection */
-    },
-    "message": "...",
-    "type": "success",
-    "code": 200
-}
-```
-
-Routing notes
-
--   Uses implicit model binding with `{package}`. Constrain it to numbers.
--   Define the static route `/packages/all_materials` before the dynamic `/{package}` to avoid conflicts.
-
-### Study Materials
-
-CRUD is exposed via resource routes.
-
-```text
-GET    /api/study_materials
-POST   /api/study_materials
-GET    /api/study_materials/{id}
-POST   /api/study_materials/{id}
-DELETE /api/study_materials/{id}
-```
-
-### Class Rooms
-
-CRUD is exposed via resource routes under `/api/class_rooms`.
-
-## Domain Model (high-level)
-
--   `Package` belongs to `ClassRoom` and has many-to-many `StudyMaterial` via `package_materials`.
--   `PackageService` handles creation, update, deletion, show, and syncing of `study_material_ids`.
--   `PackageResource` formats output (`class_room`, `study_materials`, pricing, status, notes, timestamps).
--   `PackageRequest` validates input, including `study_material_ids` as an array of existing material IDs.
+For detailed development plan, see [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md)
 
 ## Useful Commands
 
@@ -140,10 +135,27 @@ php artisan route:list | cat     # list routes without pager
 php artisan tinker               # interact with the app
 ```
 
-## Troubleshooting
+## 🚀 Next Steps
 
--   If `/api/packages/all_materials` returns a "No query results" error, ensure it is defined before `/api/packages/{package}` and that `{package}` is constrained to numbers.
--   If `created_at` formatting errors occur, note that resources use PHP 8 nullsafe operator on timestamps.
+1. Review the analysis documents (see Documentation section above)
+2. Set up development environment
+3. Create database migrations based on [DATABASE_DESIGN.md](./DATABASE_DESIGN.md)
+4. Start implementing features according to [DEVELOPMENT_PLAN.md](./DEVELOPMENT_PLAN.md)
+
+## 📝 Notes
+
+- The system supports Arabic and English languages
+- Multiple measurement units: piece, gram, ml, tola, quarter_tola
+- Automatic inventory deduction for perfume compositions
+- AI-powered inventory predictions
+- Modern Luxury UI/UX design (Matte Black + Royal Gold)
+
+## 🔒 Security
+
+- Data encryption for sensitive information
+- Role-based access control (RBAC)
+- Audit logging for all operations
+- Automatic daily backups
 
 ## License
 
