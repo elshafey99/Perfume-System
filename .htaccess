@@ -1,0 +1,19 @@
+# PHP Settings for file upload size and execution time
+php_value upload_max_filesize 64M
+php_value post_max_size 68M
+php_value memory_limit 128M
+php_value max_execution_time 300
+
+RewriteEngine On
+RewriteBase /
+RewriteCond %{THE_REQUEST} /public/([^\s?]*) [NC]
+RewriteRule ^ %1 [L,NE,R=302]
+RewriteRule ^((?!public/).*)$ public/$1 [L,NC]
+<Files .env>
+    order allow,deny
+    Deny from all
+</Files>
+# DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION BEGIN
+<IfModule Litespeed>
+</IfModule>
+# DO NOT REMOVE OR MODIFY. CLOUDLINUX ENV VARS CONFIGURATION END
