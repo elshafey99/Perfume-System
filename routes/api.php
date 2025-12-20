@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\Auth\AuthController;
 use App\Http\Controllers\Api\Role\RoleController;
 use App\Http\Controllers\Api\Profile\ProfileController;
+use App\Http\Controllers\Api\Category\CategoryController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes (Public)
@@ -25,6 +26,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/', [ProfileController::class, 'profile']);
         Route::post('/', [ProfileController::class, 'update']);
         Route::post('/change-password', [ProfileController::class, 'changePassword']);
+    });
+
+    // Categories Routes
+    Route::prefix('categories')->group(function () {
+        Route::get('/', [CategoryController::class, 'index']);
+        Route::get('/parents', [CategoryController::class, 'parents']);
+        Route::get('/parent/{parentId}', [CategoryController::class, 'byParent']);
+        Route::post('/', [CategoryController::class, 'store']);
+        Route::get('/{id}', [CategoryController::class, 'show']);
+        Route::post('/{id}', [CategoryController::class, 'update']);
+        Route::delete('/{id}', [CategoryController::class, 'destroy']);
     });
 
     // Roles Routes
