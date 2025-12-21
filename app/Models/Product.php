@@ -16,8 +16,8 @@ class Product extends Model
         'sku',
         'barcode',
         'category_id',
-        'type',
-        'unit_type',
+        'product_type_id',
+        'unit_type_id',
         'conversion_rate',
         'current_stock',
         'min_stock_level',
@@ -49,6 +49,9 @@ class Product extends Model
         'is_composition' => 'boolean',
         'is_active' => 'boolean',
         'can_return' => 'boolean',
+        'supplier_id' => 'integer',
+        'product_type_id' => 'integer',
+        'unit_type_id' => 'integer',
     ];
 
     /**
@@ -57,6 +60,22 @@ class Product extends Model
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
+    }
+
+    /**
+     * Get the product type
+     */
+    public function productType(): BelongsTo
+    {
+        return $this->belongsTo(ProductType::class);
+    }
+
+    /**
+     * Get the unit type
+     */
+    public function unitType(): BelongsTo
+    {
+        return $this->belongsTo(UnitType::class);
     }
 
     /**
@@ -107,4 +126,3 @@ class Product extends Model
         return $this->hasMany(StocktakingItem::class);
     }
 }
-

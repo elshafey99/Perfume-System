@@ -18,8 +18,8 @@ return new class extends Migration
             $table->string('sku')->unique()->nullable();
             $table->string('barcode')->unique()->nullable();
             $table->unsignedBigInteger('category_id');
-            $table->enum('type', ['ready_made', 'raw_oil', 'alcohol', 'bottle', 'packaging', 'fixative', 'accessory']);
-            $table->enum('unit_type', ['piece', 'gram', 'ml', 'tola', 'quarter_tola'])->default('piece');
+            $table->unsignedBigInteger('product_type_id');
+            $table->unsignedBigInteger('unit_type_id');
             $table->decimal('conversion_rate', 10, 4)->default(1);
             $table->decimal('current_stock', 10, 4)->default(0);
             $table->decimal('min_stock_level', 10, 4)->default(0);
@@ -39,9 +39,12 @@ return new class extends Migration
             $table->timestamps();
 
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('restrict');
+            $table->foreign('product_type_id')->references('id')->on('product_types')->onDelete('restrict');
+            $table->foreign('unit_type_id')->references('id')->on('unit_types')->onDelete('restrict');
             $table->foreign('supplier_id')->references('id')->on('suppliers')->onDelete('set null');
             $table->index('category_id');
-            $table->index('type');
+            $table->index('product_type_id');
+            $table->index('unit_type_id');
             $table->index('barcode');
             $table->index('sku');
             $table->index('is_active');
