@@ -26,8 +26,23 @@ class ProductResource extends JsonResource
                     'name' => $this->category->name,
                 ];
             }),
-            'type' => $this->type,
-            'unit_type' => $this->unit_type,
+            'product_type_id' => $this->product_type_id,
+            'product_type' => $this->whenLoaded('productType', function () {
+                return [
+                    'id' => $this->productType->id,
+                    'code' => $this->productType->code,
+                    'name' => $this->productType->name,
+                ];
+            }),
+            'unit_type_id' => $this->unit_type_id,
+            'unit_type' => $this->whenLoaded('unitType', function () {
+                return [
+                    'id' => $this->unitType->id,
+                    'code' => $this->unitType->code,
+                    'name' => $this->unitType->name,
+                    'symbol' => $this->unitType->symbol,
+                ];
+            }),
             'conversion_rate' => $this->conversion_rate,
             'current_stock' => (float) $this->current_stock,
             'min_stock_level' => (float) $this->min_stock_level,
@@ -56,4 +71,3 @@ class ProductResource extends JsonResource
         ];
     }
 }
-

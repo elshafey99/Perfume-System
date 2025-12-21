@@ -14,7 +14,7 @@ class ProductRepository
      */
     public function getAll(int $perPage = 15, ?bool $activeOnly = null, ?int $categoryId = null, ?string $search = null): LengthAwarePaginator
     {
-        $query = Product::with(['category', 'supplier'])->orderBy('name');
+        $query = Product::with(['category', 'supplier', 'productType', 'unitType'])->orderBy('name');
 
         if ($activeOnly !== null) {
             $query->where('is_active', $activeOnly);
@@ -40,7 +40,7 @@ class ProductRepository
      */
     public function getAllWithoutPagination(?bool $activeOnly = null, ?int $categoryId = null): Collection
     {
-        $query = Product::with(['category', 'supplier'])->orderBy('name');
+        $query = Product::with(['category', 'supplier', 'productType', 'unitType'])->orderBy('name');
 
         if ($activeOnly !== null) {
             $query->where('is_active', $activeOnly);
@@ -58,7 +58,7 @@ class ProductRepository
      */
     public function findById(int $id): ?Product
     {
-        return Product::with(['category', 'supplier', 'inventoryTransactions', 'saleItems'])->find($id);
+        return Product::with(['category', 'supplier', 'productType', 'unitType', 'inventoryTransactions', 'saleItems'])->find($id);
     }
 
     /**
@@ -66,7 +66,7 @@ class ProductRepository
      */
     public function findByBarcode(string $barcode): ?Product
     {
-        return Product::with(['category', 'supplier'])
+        return Product::with(['category', 'supplier', 'productType', 'unitType'])
             ->where('barcode', $barcode)
             ->first();
     }
@@ -76,7 +76,7 @@ class ProductRepository
      */
     public function getLowStock(?int $perPage = null): Collection|LengthAwarePaginator
     {
-        $query = Product::with(['category', 'supplier'])
+        $query = Product::with(['category', 'supplier', 'productType', 'unitType'])
             ->whereColumn('current_stock', '<=', 'min_stock_level')
             ->where('is_active', true)
             ->orderBy('current_stock', 'asc');
@@ -99,7 +99,74 @@ class ProductRepository
             $data['image'] = $imagePath;
         }
 
+        // Generate SKU if not provided
+        if (empty($data['sku'])) {
+            $data['sku'] = $this->generateSku();
+        }
+
+        // Generate Barcode if not provided
+        if (empty($data['barcode'])) {
+            $data['barcode'] = $this->generateBarcode();
+        }
+
         return Product::create($data);
+    }
+
+    /**
+     * Generate unique SKU
+     */
+    private function generateSku(): string
+    {
+        $prefix = 'PRD';
+        $maxAttempts = 100;
+        $attempt = 0;
+
+        do {
+            $lastId = Product::max('id') ?? 0;
+            $sku = $prefix . '-' . str_pad((string) ($lastId + 1), 6, '0', STR_PAD_LEFT) . '-' . rand(100, 999);
+            $exists = Product::where('sku', $sku)->exists();
+            $attempt++;
+        } while ($exists && $attempt < $maxAttempts);
+
+        // Fallback if all attempts failed
+        if ($exists) {
+            $sku = $prefix . '-' . time() . '-' . rand(1000, 9999);
+        }
+
+        return $sku;
+    }
+
+    /**
+     * Generate unique Barcode (EAN-13 format)
+     */
+    private function generateBarcode(): string
+    {
+        $maxAttempts = 100;
+        $attempt = 0;
+
+        do {
+            // Generate 12 digits
+            $barcode = '2' . str_pad((string) rand(0, 99999999999), 11, '0', STR_PAD_LEFT);
+
+            // Calculate check digit (EAN-13 algorithm)
+            $sum = 0;
+            for ($i = 0; $i < 12; $i++) {
+                $digit = (int) $barcode[$i];
+                $sum += ($i % 2 === 0) ? $digit : $digit * 3;
+            }
+            $checkDigit = (10 - ($sum % 10)) % 10;
+            $barcode .= $checkDigit;
+
+            $exists = Product::where('barcode', $barcode)->exists();
+            $attempt++;
+        } while ($exists && $attempt < $maxAttempts);
+
+        // Fallback if all attempts failed
+        if ($exists) {
+            $barcode = '2' . time() . rand(100, 999);
+        }
+
+        return $barcode;
     }
 
     /**
@@ -184,4 +251,3 @@ class ProductRepository
         return $product->compositionIngredients()->count() > 0;
     }
 }
-

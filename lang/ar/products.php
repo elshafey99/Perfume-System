@@ -17,4 +17,3 @@ return [
     'stock_updated_successfully' => 'تم تحديث المخزون بنجاح',
     'stock_update_failed' => 'فشل تحديث المخزون',
 ];
-

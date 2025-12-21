@@ -13,4 +13,3 @@ return [
     'supplier_has_purchases' => 'لا يمكن حذف المورد لأنه يحتوي على مشتريات',
     'supplier_has_products' => 'لا يمكن حذف المورد لأنه يحتوي على منتجات',
 ];
-

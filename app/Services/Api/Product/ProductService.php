@@ -95,7 +95,7 @@ class ProductService
 
             return [
                 'success' => true,
-                'data' => $product->load(['category', 'supplier']),
+                'data' => $product->load(['category', 'supplier', 'productType', 'unitType']),
                 'message' => __('products.product_created_successfully'),
             ];
         } catch (\Exception $e) {
@@ -125,7 +125,7 @@ class ProductService
 
             return [
                 'success' => true,
-                'data' => $product->fresh()->load(['category', 'supplier']),
+                'data' => $product->fresh()->load(['category', 'supplier', 'productType', 'unitType']),
                 'message' => __('products.product_updated_successfully'),
             ];
         } catch (\Exception $e) {
@@ -219,4 +219,3 @@ class ProductService
         }
     }
 }
-
