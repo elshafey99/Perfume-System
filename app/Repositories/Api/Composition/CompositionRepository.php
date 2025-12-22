@@ -93,6 +93,44 @@ class CompositionRepository
     }
 
     /**
+     * Create new composition with ingredients
+     */
+    public function createWithIngredients(array $data, array $ingredients = []): Composition
+    {
+        // Generate code if not provided
+        if (empty($data['code'])) {
+            $data['code'] = $this->generateCode();
+        }
+
+        // Handle image upload
+        if (isset($data['image']) && $data['image']) {
+            $imagePath = FileHelper::uploadImage($data['image'], 'uploads/compositions');
+            $data['image'] = $imagePath;
+        }
+
+        // Remove ingredients from data if exists
+        unset($data['ingredients']);
+
+        // Create composition
+        $composition = Composition::create($data);
+
+        // Add ingredients if provided
+        if (!empty($ingredients)) {
+            $sortOrder = 1;
+            foreach ($ingredients as $ingredient) {
+                $ingredient['composition_id'] = $composition->id;
+                if (!isset($ingredient['sort_order'])) {
+                    $ingredient['sort_order'] = $sortOrder;
+                }
+                \App\Models\CompositionIngredient::create($ingredient);
+                $sortOrder++;
+            }
+        }
+
+        return $composition->load(['product', 'ingredients.ingredientProduct']);
+    }
+
+    /**
      * Update composition
      */
     public function update(Composition $composition, array $data): bool

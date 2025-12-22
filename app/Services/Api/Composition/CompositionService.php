@@ -72,11 +72,16 @@ class CompositionService
     public function create(array $data): array
     {
         try {
-            $composition = $this->compositionRepository->create($data);
+            // Extract ingredients from data
+            $ingredients = $data['ingredients'] ?? [];
+            unset($data['ingredients']);
+
+            // Create composition with ingredients
+            $composition = $this->compositionRepository->createWithIngredients($data, $ingredients);
 
             return [
                 'success' => true,
-                'data' => $composition->load(['product', 'ingredients.ingredientProduct']),
+                'data' => $composition,
                 'message' => __('compositions.composition_created_successfully'),
             ];
         } catch (\Exception $e) {
@@ -174,7 +179,7 @@ class CompositionService
         foreach ($composition->ingredients as $ingredient) {
             $product = $ingredient->ingredientProduct;
             $quantity = (float) $ingredient->quantity;
-            
+
             // Calculate cost based on unit type
             $unitCost = 0;
             switch ($ingredient->unit) {
@@ -220,12 +225,11 @@ class CompositionService
                 'current_base_cost' => (float) $composition->base_cost,
                 'selling_price' => (float) $composition->selling_price,
                 'profit' => (float) $composition->selling_price - $finalCost,
-                'profit_margin' => $composition->selling_price > 0 
-                    ? (($composition->selling_price - $finalCost) / $composition->selling_price) * 100 
+                'profit_margin' => $composition->selling_price > 0
+                    ? (($composition->selling_price - $finalCost) / $composition->selling_price) * 100
                     : 0,
             ],
             'message' => __('compositions.cost_calculated_successfully'),
         ];
     }
 }
-

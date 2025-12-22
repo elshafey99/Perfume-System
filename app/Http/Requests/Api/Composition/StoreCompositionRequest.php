@@ -38,6 +38,12 @@ class StoreCompositionRequest extends FormRequest
             'is_magic_recipe' => ['nullable', 'boolean'],
             'original_perfume_name' => ['nullable', 'string', 'max:255'],
             'is_active' => ['nullable', 'boolean'],
+            // إضافة validation للمكونات
+            'ingredients' => ['nullable', 'array'],
+            'ingredients.*.ingredient_product_id' => ['required_with:ingredients', 'integer', 'exists:products,id'],
+            'ingredients.*.quantity' => ['required_with:ingredients', 'numeric', 'min:0.0001'],
+            'ingredients.*.unit' => ['required_with:ingredients', 'string', 'in:piece,gram,ml'],
+            'ingredients.*.sort_order' => ['nullable', 'integer', 'min:0'],
         ];
     }
 
@@ -77,6 +83,14 @@ class StoreCompositionRequest extends FormRequest
             'image.image' => __('validation.image', ['attribute' => 'الصورة']),
             'image.mimes' => __('validation.mimes', ['attribute' => 'الصورة', 'values' => 'jpeg,png,jpg,gif,webp']),
             'image.max' => __('validation.max.file', ['attribute' => 'الصورة', 'max' => 5120]),
+            'ingredients.array' => __('validation.array', ['attribute' => 'المكونات']),
+            'ingredients.*.ingredient_product_id.required_with' => __('validation.required', ['attribute' => 'المنتج المكون']),
+            'ingredients.*.ingredient_product_id.exists' => __('validation.exists', ['attribute' => 'المنتج المكون']),
+            'ingredients.*.quantity.required_with' => __('validation.required', ['attribute' => 'الكمية']),
+            'ingredients.*.quantity.numeric' => __('validation.numeric', ['attribute' => 'الكمية']),
+            'ingredients.*.quantity.min' => __('validation.min.numeric', ['attribute' => 'الكمية', 'min' => 0.0001]),
+            'ingredients.*.unit.required_with' => __('validation.required', ['attribute' => 'وحدة القياس']),
+            'ingredients.*.unit.in' => __('validation.in', ['attribute' => 'وحدة القياس']),
         ];
     }
 
@@ -100,4 +114,3 @@ class StoreCompositionRequest extends FormRequest
         );
     }
 }
-
