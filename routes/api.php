@@ -9,6 +9,8 @@ use App\Http\Controllers\Api\Supplier\SupplierController;
 use App\Http\Controllers\Api\UnitType\UnitTypeController;
 use App\Http\Controllers\Api\ProductType\ProductTypeController;
 use App\Http\Controllers\Api\Product\ProductController;
+use App\Http\Controllers\Api\InventoryTransaction\InventoryTransactionController;
+use App\Http\Controllers\Api\Stocktaking\StocktakingController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes (Public)
@@ -106,5 +108,25 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::patch('/{id}', [ProductController::class, 'update']);
         Route::put('/{id}/stock', [ProductController::class, 'updateStock']);
         Route::delete('/{id}', [ProductController::class, 'destroy']);
+    });
+
+    // Inventory Transactions Routes
+    Route::prefix('inventory-transactions')->group(function () {
+        Route::get('/', [InventoryTransactionController::class, 'index']);
+        Route::get('/product/{productId}', [InventoryTransactionController::class, 'getByProductId']);
+        Route::post('/', [InventoryTransactionController::class, 'store']);
+        Route::get('/{id}', [InventoryTransactionController::class, 'show']);
+        Route::delete('/{id}', [InventoryTransactionController::class, 'destroy']);
+    });
+
+    // Stocktakings Routes
+    Route::prefix('stocktakings')->group(function () {
+        Route::get('/', [StocktakingController::class, 'index']);
+        Route::post('/', [StocktakingController::class, 'store']);
+        Route::get('/{id}', [StocktakingController::class, 'show']);
+        Route::get('/{id}/items', [StocktakingController::class, 'getItems']);
+        Route::post('/{id}/items', [StocktakingController::class, 'addItem']);
+        Route::post('/{id}/complete', [StocktakingController::class, 'complete']);
+        Route::delete('/{id}', [StocktakingController::class, 'destroy']);
     });
 });
