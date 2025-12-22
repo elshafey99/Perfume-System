@@ -11,6 +11,8 @@ use App\Http\Controllers\Api\ProductType\ProductTypeController;
 use App\Http\Controllers\Api\Product\ProductController;
 use App\Http\Controllers\Api\InventoryTransaction\InventoryTransactionController;
 use App\Http\Controllers\Api\Stocktaking\StocktakingController;
+use App\Http\Controllers\Api\Composition\CompositionController;
+use App\Http\Controllers\Api\Composition\CompositionIngredientController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes (Public)
@@ -128,5 +130,24 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/{id}/items', [StocktakingController::class, 'addItem']);
         Route::post('/{id}/complete', [StocktakingController::class, 'complete']);
         Route::delete('/{id}', [StocktakingController::class, 'destroy']);
+    });
+
+    // Compositions Routes
+    Route::prefix('compositions')->group(function () {
+        Route::get('/', [CompositionController::class, 'index']);
+        Route::get('/magic-recipes', [CompositionController::class, 'getMagicRecipes']);
+        Route::post('/', [CompositionController::class, 'store']);
+        Route::get('/{id}', [CompositionController::class, 'show']);
+        Route::put('/{id}', [CompositionController::class, 'update']);
+        Route::patch('/{id}', [CompositionController::class, 'update']);
+        Route::post('/{id}/calculate-cost', [CompositionController::class, 'calculateCost']);
+        Route::delete('/{id}', [CompositionController::class, 'destroy']);
+
+        // Composition Ingredients Routes
+        Route::get('/{id}/ingredients', [CompositionController::class, 'getIngredients']);
+        Route::post('/{id}/ingredients', [CompositionIngredientController::class, 'store']);
+        Route::put('/{id}/ingredients/{ingredientId}', [CompositionIngredientController::class, 'update']);
+        Route::patch('/{id}/ingredients/{ingredientId}', [CompositionIngredientController::class, 'update']);
+        Route::delete('/{id}/ingredients/{ingredientId}', [CompositionIngredientController::class, 'destroy']);
     });
 });
