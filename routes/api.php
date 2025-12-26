@@ -13,6 +13,7 @@ use App\Http\Controllers\Api\InventoryTransaction\InventoryTransactionController
 use App\Http\Controllers\Api\Stocktaking\StocktakingController;
 use App\Http\Controllers\Api\Composition\CompositionController;
 use App\Http\Controllers\Api\Composition\CompositionIngredientController;
+use App\Http\Controllers\Api\Sale\SaleController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes (Public)
@@ -149,5 +150,24 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::put('/{id}/ingredients/{ingredientId}', [CompositionIngredientController::class, 'update']);
         Route::patch('/{id}/ingredients/{ingredientId}', [CompositionIngredientController::class, 'update']);
         Route::delete('/{id}/ingredients/{ingredientId}', [CompositionIngredientController::class, 'destroy']);
+    });
+
+    // Sales Routes
+    Route::prefix('sales')->group(function () {
+        Route::get('/', [SaleController::class, 'index']);
+        Route::post('/', [SaleController::class, 'store']);
+        Route::get('/today', [SaleController::class, 'todaySummary']);
+        Route::post('/quick', [SaleController::class, 'quickSale']);
+        Route::get('/invoice/{invoiceNumber}', [SaleController::class, 'getByInvoiceNumber']);
+        Route::get('/{id}', [SaleController::class, 'show']);
+        Route::put('/{id}', [SaleController::class, 'update']);
+        Route::post('/{id}/cancel', [SaleController::class, 'cancel']);
+        Route::post('/{id}/refund', [SaleController::class, 'refund']);
+        Route::post('/{id}/apply-discount', [SaleController::class, 'applyDiscount']);
+        Route::get('/{id}/items', [SaleController::class, 'getItems']);
+        Route::post('/{id}/items', [SaleController::class, 'addItem']);
+        Route::put('/{id}/items/{itemId}', [SaleController::class, 'updateItem']);
+        Route::delete('/{id}/items/{itemId}', [SaleController::class, 'removeItem']);
+        Route::post('/{id}/payment', [SaleController::class, 'recordPayment']);
     });
 });
