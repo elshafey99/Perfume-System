@@ -158,6 +158,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/', [SaleController::class, 'store']);
         Route::get('/today', [SaleController::class, 'todaySummary']);
         Route::post('/quick', [SaleController::class, 'quickSale']);
+        Route::post('/composition-sale', [SaleController::class, 'compositionSale']);
+        Route::post('/custom-blend', [SaleController::class, 'customBlend']);
         Route::get('/invoice/{invoiceNumber}', [SaleController::class, 'getByInvoiceNumber']);
         Route::get('/{id}', [SaleController::class, 'show']);
         Route::put('/{id}', [SaleController::class, 'update']);

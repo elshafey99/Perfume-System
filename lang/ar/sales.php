@@ -83,5 +83,14 @@ return [
     'discount_applied_successfully' => 'تم تطبيق الخصم بنجاح',
     'discount_application_failed' => 'فشل تطبيق الخصم',
     'cannot_modify_sale' => 'لا يمكن تعديل هذه الفاتورة',
+
+    // Composition Sale
+    'composition_sale_created_successfully' => 'تم بيع التركيبة بنجاح',
+    'composition_sale_failed' => 'فشل بيع التركيبة',
+
+    // Custom Blend
+    'custom_blend_created_successfully' => 'تم بيع الخلطة المخصصة بنجاح',
+    'custom_blend_failed' => 'فشل بيع الخلطة المخصصة',
 ];
+
 

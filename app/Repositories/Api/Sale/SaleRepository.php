@@ -368,12 +368,12 @@ class SaleRepository
      */
     private function deductCompositionStock(int $compositionId, float $quantity): void
     {
-        $composition = Composition::with('ingredients.product')->find($compositionId);
+        $composition = Composition::with('ingredients.ingredientProduct')->find($compositionId);
         if ($composition) {
             foreach ($composition->ingredients as $ingredient) {
-                if ($ingredient->product) {
+                if ($ingredient->ingredientProduct) {
                     $ingredientQuantity = $ingredient->quantity * $quantity;
-                    $this->deductStock($ingredient->product_id, $ingredientQuantity);
+                    $this->deductStock($ingredient->ingredient_product_id, $ingredientQuantity);
                 }
             }
         }
@@ -384,12 +384,12 @@ class SaleRepository
      */
     private function restoreCompositionStock(int $compositionId, float $quantity): void
     {
-        $composition = Composition::with('ingredients.product')->find($compositionId);
+        $composition = Composition::with('ingredients.ingredientProduct')->find($compositionId);
         if ($composition) {
             foreach ($composition->ingredients as $ingredient) {
-                if ($ingredient->product) {
+                if ($ingredient->ingredientProduct) {
                     $ingredientQuantity = $ingredient->quantity * $quantity;
-                    $this->restoreStock($ingredient->product_id, $ingredientQuantity);
+                    $this->restoreStock($ingredient->ingredient_product_id, $ingredientQuantity);
                 }
             }
         }
@@ -638,5 +638,146 @@ class SaleRepository
             return $sale->fresh(['customer', 'employee', 'items.product', 'items.composition']);
         });
     }
+
+    /**
+     * Composition sale - sell a pre-made composition
+     */
+    public function compositionSale(array $data): Sale
+    {
+        return DB::transaction(function () use ($data) {
+            $composition = Composition::find($data['composition_id']);
+            
+            if (!$composition) {
+                throw new \Exception('Composition not found');
+            }
+
+            $data['invoice_number'] = $this->generateInvoiceNumber();
+            $data['sale_date'] = now();
+            $data['payment_status'] = 'paid';
+            $data['status'] = 'completed';
+
+            $quantity = $data['quantity'];
+            $unit = $data['unit'] ?? 'tola';
+            $unitPrice = $data['unit_price'] ?? $composition->selling_price;
+            $itemTotal = $quantity * $unitPrice;
+
+            // Calculate totals
+            $subtotal = $itemTotal;
+            $discount = $data['discount'] ?? 0;
+            $discountType = $data['discount_type'] ?? 'amount';
+            $taxRate = $data['tax_rate'] ?? 15;
+
+            $discountAmount = $discountType === 'percentage' ? $subtotal * ($discount / 100) : $discount;
+            $taxableAmount = $subtotal - $discountAmount;
+            $taxAmount = $taxableAmount * ($taxRate / 100);
+            $total = $taxableAmount + $taxAmount;
+
+            // Remove item-specific data
+            unset($data['composition_id'], $data['quantity'], $data['unit'], $data['unit_price']);
+
+            $data['subtotal'] = $subtotal;
+            $data['tax_amount'] = $taxAmount;
+            $data['total'] = $total;
+            $data['paid_amount'] = $total;
+
+            // Create sale
+            $sale = Sale::create($data);
+
+            // Create item
+            SaleItem::create([
+                'sale_id' => $sale->id,
+                'composition_id' => $composition->id,
+                'product_name' => $composition->name,
+                'quantity' => $quantity,
+                'unit' => $unit,
+                'unit_price' => $unitPrice,
+                'total' => $itemTotal,
+                'is_composition' => true,
+                'is_custom_blend' => false,
+            ]);
+
+            // Deduct stock for composition ingredients
+            $this->deductCompositionStock($composition->id, $quantity);
+
+            return $sale->fresh(['customer', 'employee', 'items.product', 'items.composition']);
+        });
+    }
+
+    /**
+     * Custom blend sale - sell a custom mix of products
+     */
+    public function customBlend(array $data): Sale
+    {
+        return DB::transaction(function () use ($data) {
+            $data['invoice_number'] = $this->generateInvoiceNumber();
+            $data['sale_date'] = now();
+            $data['payment_status'] = 'paid';
+            $data['status'] = 'completed';
+
+            $blendName = $data['blend_name'] ?? 'خلطة مخصصة';
+            $ingredients = $data['ingredients'];
+
+            // Calculate items total
+            $subtotal = 0;
+            $itemsData = [];
+
+            foreach ($ingredients as $ingredient) {
+                $product = Product::find($ingredient['product_id']);
+                if (!$product) {
+                    continue;
+                }
+
+                $unitPrice = $product->selling_price;
+                $itemTotal = $ingredient['quantity'] * $unitPrice;
+                $subtotal += $itemTotal;
+
+                $itemsData[] = [
+                    'product_id' => $product->id,
+                    'product_name' => $product->name,
+                    'quantity' => $ingredient['quantity'],
+                    'unit' => $ingredient['unit'],
+                    'unit_price' => $unitPrice,
+                    'total' => $itemTotal,
+                    'is_composition' => false,
+                    'is_custom_blend' => true,
+                    'notes' => "جزء من: {$blendName}",
+                ];
+            }
+
+            // Calculate totals
+            $discount = $data['discount'] ?? 0;
+            $discountType = $data['discount_type'] ?? 'amount';
+            $taxRate = $data['tax_rate'] ?? 15;
+
+            $discountAmount = $discountType === 'percentage' ? $subtotal * ($discount / 100) : $discount;
+            $taxableAmount = $subtotal - $discountAmount;
+            $taxAmount = $taxableAmount * ($taxRate / 100);
+            $total = $taxableAmount + $taxAmount;
+
+            // Remove specific data
+            unset($data['blend_name'], $data['ingredients']);
+
+            $data['subtotal'] = $subtotal;
+            $data['tax_amount'] = $taxAmount;
+            $data['total'] = $total;
+            $data['paid_amount'] = $total;
+            $data['notes'] = ($data['notes'] ?? '') . " | خلطة مخصصة: {$blendName}";
+
+            // Create sale
+            $sale = Sale::create($data);
+
+            // Create items and deduct stock
+            foreach ($itemsData as $itemData) {
+                $itemData['sale_id'] = $sale->id;
+                SaleItem::create($itemData);
+                
+                // Deduct stock
+                $this->deductStock($itemData['product_id'], $itemData['quantity']);
+            }
+
+            return $sale->fresh(['customer', 'employee', 'items.product', 'items.composition']);
+        });
+    }
 }
+
 

@@ -543,5 +543,60 @@ class SaleService
             ];
         }
     }
+
+    /**
+     * Composition sale - sell a pre-made composition
+     */
+    public function compositionSale(array $data): array
+    {
+        try {
+            $sale = $this->saleRepository->compositionSale($data);
+
+            return [
+                'success' => true,
+                'data' => $sale,
+                'message' => __('sales.composition_sale_created_successfully'),
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => __('sales.composition_sale_failed') . ': ' . $e->getMessage(),
+            ];
+        }
+    }
+
+    /**
+     * Custom blend sale - sell a custom mix of products
+     */
+    public function customBlend(array $data): array
+    {
+        // Check stock for all ingredients
+        if (isset($data['ingredients'])) {
+            foreach ($data['ingredients'] as $ingredient) {
+                if (!$this->saleRepository->hassufficientStock($ingredient['product_id'], $ingredient['quantity'])) {
+                    return [
+                        'success' => false,
+                        'message' => __('sales.insufficient_stock'),
+                    ];
+                }
+            }
+        }
+
+        try {
+            $sale = $this->saleRepository->customBlend($data);
+
+            return [
+                'success' => true,
+                'data' => $sale,
+                'message' => __('sales.custom_blend_created_successfully'),
+            ];
+        } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => __('sales.custom_blend_failed') . ': ' . $e->getMessage(),
+            ];
+        }
+    }
 }
+
 

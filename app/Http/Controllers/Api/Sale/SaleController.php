@@ -11,6 +11,8 @@ use App\Http\Requests\Api\Sale\RecordPaymentRequest;
 use App\Http\Requests\Api\Sale\QuickSaleRequest;
 use App\Http\Requests\Api\Sale\RefundSaleRequest;
 use App\Http\Requests\Api\Sale\ApplyDiscountRequest;
+use App\Http\Requests\Api\Sale\CompositionSaleRequest;
+use App\Http\Requests\Api\Sale\CustomBlendRequest;
 use App\Http\Resources\Api\Sale\SaleResource;
 use App\Http\Resources\Api\Sale\SaleItemResource;
 use App\Services\Api\Sale\SaleService;
@@ -315,5 +317,48 @@ class SaleController extends Controller
             $result['message']
         );
     }
+
+    /**
+     * Composition sale - sell a pre-made composition
+     */
+    public function compositionSale(CompositionSaleRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $data['employee_id'] = auth()->id();
+
+        $result = $this->saleService->compositionSale($data);
+
+        if (!$result['success']) {
+            return ApiResponse::error($result['message'], 400);
+        }
+
+        return ApiResponse::success(
+            new SaleResource($result['data']),
+            $result['message'],
+            201
+        );
+    }
+
+    /**
+     * Custom blend sale - sell a custom mix of products
+     */
+    public function customBlend(CustomBlendRequest $request): JsonResponse
+    {
+        $data = $request->validated();
+        $data['employee_id'] = auth()->id();
+
+        $result = $this->saleService->customBlend($data);
+
+        if (!$result['success']) {
+            return ApiResponse::error($result['message'], 400);
+        }
+
+        return ApiResponse::success(
+            new SaleResource($result['data']),
+            $result['message'],
+            201
+        );
+    }
 }
+
 
