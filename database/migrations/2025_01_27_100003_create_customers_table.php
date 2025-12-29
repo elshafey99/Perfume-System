@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('phone')->unique();
             $table->string('email')->unique()->nullable();
             $table->date('birth_date')->nullable();
-            $table->enum('gender', ['male', 'female', 'other'])->nullable();
+            $table->enum('gender', ['male', 'female'])->nullable();
             $table->text('address')->nullable();
             $table->decimal('loyalty_points', 10, 2)->default(0);
             $table->enum('loyalty_level', ['bronze', 'silver', 'gold', 'platinum'])->default('bronze');

@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\Stocktaking\StocktakingController;
 use App\Http\Controllers\Api\Composition\CompositionController;
 use App\Http\Controllers\Api\Composition\CompositionIngredientController;
 use App\Http\Controllers\Api\Sale\SaleController;
+use App\Http\Controllers\Api\Customer\CustomerController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes (Public)
@@ -171,5 +172,22 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::put('/{id}/items/{itemId}', [SaleController::class, 'updateItem']);
         Route::delete('/{id}/items/{itemId}', [SaleController::class, 'removeItem']);
         Route::post('/{id}/payment', [SaleController::class, 'recordPayment']);
+    });
+
+    // Customers Routes
+    Route::prefix('customers')->group(function () {
+        Route::get('/', [CustomerController::class, 'index']);
+        Route::post('/', [CustomerController::class, 'store']);
+        Route::get('/search', [CustomerController::class, 'searchByPhone']);
+        Route::get('/{id}', [CustomerController::class, 'show']);
+        Route::put('/{id}', [CustomerController::class, 'update']);
+        Route::delete('/{id}', [CustomerController::class, 'destroy']);
+        Route::get('/{id}/sales', [CustomerController::class, 'getSalesHistory']);
+        Route::get('/{id}/preferences', [CustomerController::class, 'getPreferences']);
+        Route::put('/{id}/preferences', [CustomerController::class, 'updatePreferences']);
+        Route::get('/{id}/loyalty-points', [CustomerController::class, 'getLoyaltyBalance']);
+        Route::post('/{id}/loyalty-points/earn', [CustomerController::class, 'earnPoints']);
+        Route::post('/{id}/loyalty-points/redeem', [CustomerController::class, 'redeemPoints']);
+        Route::get('/{id}/loyalty-history', [CustomerController::class, 'getLoyaltyHistory']);
     });
 });
