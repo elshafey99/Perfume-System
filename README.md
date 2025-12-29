@@ -50,8 +50,6 @@
 - **Backend:** Laravel 11.31, PHP 8.2
 - **Database:** MySQL 8.0+
 - **Authentication:** Laravel Sanctum
-- **Permissions:** Spatie Laravel Permission
-- **Frontend:** Livewire, Tailwind CSS
 
 ---
 
@@ -59,8 +57,7 @@
 
 - PHP ^8.2 مع Extensions المطلوبة
 - Composer ^2.0
-- MySQL 8.0+ أو PostgreSQL 13+
-- Node.js (اختياري للواجهة الأمامية)
+- MySQL 8.0+
 
 ---
 
@@ -265,5 +262,5 @@ MIT License
 
 <p align="center">
   <strong>Built with ❤️ using Laravel 11</strong><br>
-  <strong>Last Updated:</strong> 2025-01-27 | <strong>Version:</strong> 1.0.0
+  <strong>Last Updated:</strong> 2025-01-27<strong>
 </p>
