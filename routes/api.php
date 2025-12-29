@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\Composition\CompositionController;
 use App\Http\Controllers\Api\Composition\CompositionIngredientController;
 use App\Http\Controllers\Api\Sale\SaleController;
 use App\Http\Controllers\Api\Customer\CustomerController;
+use App\Http\Controllers\Api\Purchase\PurchaseController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes (Public)
@@ -189,5 +190,19 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/{id}/loyalty-points/earn', [CustomerController::class, 'earnPoints']);
         Route::post('/{id}/loyalty-points/redeem', [CustomerController::class, 'redeemPoints']);
         Route::get('/{id}/loyalty-history', [CustomerController::class, 'getLoyaltyHistory']);
+    });
+
+    // Purchases Routes
+    Route::prefix('purchases')->group(function () {
+        Route::get('/', [PurchaseController::class, 'index']);
+        Route::post('/', [PurchaseController::class, 'store']);
+        Route::get('/{id}', [PurchaseController::class, 'show']);
+        Route::put('/{id}', [PurchaseController::class, 'update']);
+        Route::post('/{id}/cancel', [PurchaseController::class, 'cancel']);
+        Route::post('/{id}/receive', [PurchaseController::class, 'receive']);
+        Route::get('/{id}/items', [PurchaseController::class, 'getItems']);
+        Route::post('/{id}/items', [PurchaseController::class, 'addItem']);
+        Route::put('/{id}/items/{itemId}', [PurchaseController::class, 'updateItem']);
+        Route::delete('/{id}/items/{itemId}', [PurchaseController::class, 'removeItem']);
     });
 });
