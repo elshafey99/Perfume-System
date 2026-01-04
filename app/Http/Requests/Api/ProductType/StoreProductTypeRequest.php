@@ -28,7 +28,7 @@ class StoreProductTypeRequest extends FormRequest
             'name' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
-            'is_active' => ['nullable', 'in:true,false,1,0,"1","0"'],
+            'is_active' => ['nullable', 'boolean'],
         ];
     }
 

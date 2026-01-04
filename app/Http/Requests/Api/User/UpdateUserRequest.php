@@ -34,7 +34,7 @@ class UpdateUserRequest extends FormRequest
             'type' => ['sometimes', 'required', 'in:admin,employee'],
             'role_id' => ['nullable', 'integer', 'exists:roles,id'],
             'position' => ['nullable', 'string', 'max:255'],
-            'status' => ['nullable', 'in:true,false,1,0,"1","0"'],
+            'status' => ['nullable', 'boolean'],
         ];
     }
 

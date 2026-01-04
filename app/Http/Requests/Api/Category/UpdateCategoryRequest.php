@@ -31,7 +31,7 @@ class UpdateCategoryRequest extends FormRequest
             'icon' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp,svg', 'max:2048'],
             'description' => ['nullable', 'string'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
-            'is_active' => ['nullable', 'in:true,false,1,0,"1","0"'],
+            'is_active' => ['nullable', 'boolean'],
         ];
     }
 

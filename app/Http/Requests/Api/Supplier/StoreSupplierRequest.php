@@ -31,7 +31,7 @@ class StoreSupplierRequest extends FormRequest
             'address' => ['nullable', 'string'],
             'tax_number' => ['nullable', 'string', 'max:100'],
             'notes' => ['nullable', 'string'],
-            'is_active' => ['nullable', 'in:true,false,1,0,"1","0"'],
+            'is_active' => ['nullable', 'boolean'],
         ];
     }
 

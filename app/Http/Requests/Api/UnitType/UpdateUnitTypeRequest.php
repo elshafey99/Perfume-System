@@ -30,7 +30,7 @@ class UpdateUnitTypeRequest extends FormRequest
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'symbol' => ['nullable', 'string', 'max:255'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
-            'is_active' => ['nullable', 'in:true,false,1,0,"1","0"'],
+            'is_active' => ['nullable', 'boolean'],
         ];
     }
 
