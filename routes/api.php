@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\Composition\CompositionIngredientController;
 use App\Http\Controllers\Api\Sale\SaleController;
 use App\Http\Controllers\Api\Customer\CustomerController;
 use App\Http\Controllers\Api\Purchase\PurchaseController;
+use App\Http\Controllers\Api\Expense\ExpenseController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes (Public)
@@ -204,5 +205,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::post('/{id}/items', [PurchaseController::class, 'addItem']);
         Route::put('/{id}/items/{itemId}', [PurchaseController::class, 'updateItem']);
         Route::delete('/{id}/items/{itemId}', [PurchaseController::class, 'removeItem']);
+    });
+
+    // Expenses Routes
+    Route::prefix('expenses')->group(function () {
+        Route::get('/', [ExpenseController::class, 'index']);
+        Route::get('/by-category', [ExpenseController::class, 'byCategory']);
+        Route::post('/', [ExpenseController::class, 'store']);
+        Route::get('/{id}', [ExpenseController::class, 'show']);
+        Route::put('/{id}', [ExpenseController::class, 'update']);
+        Route::post('/{id}', [ExpenseController::class, 'update']);
+        Route::delete('/{id}', [ExpenseController::class, 'destroy']);
     });
 });
