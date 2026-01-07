@@ -17,6 +17,7 @@ use App\Http\Controllers\Api\Sale\SaleController;
 use App\Http\Controllers\Api\Customer\CustomerController;
 use App\Http\Controllers\Api\Purchase\PurchaseController;
 use App\Http\Controllers\Api\Expense\ExpenseController;
+use App\Http\Controllers\Api\Return\ReturnController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes (Public)
@@ -216,5 +217,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::put('/{id}', [ExpenseController::class, 'update']);
         Route::post('/{id}', [ExpenseController::class, 'update']);
         Route::delete('/{id}', [ExpenseController::class, 'destroy']);
+    });
+
+    // Returns Routes
+    Route::prefix('returns')->group(function () {
+        Route::get('/', [ReturnController::class, 'index']);
+        Route::get('/statistics', [ReturnController::class, 'statistics']);
+        Route::post('/', [ReturnController::class, 'store']);
+        Route::get('/{id}', [ReturnController::class, 'show']);
+        Route::put('/{id}/approve', [ReturnController::class, 'approve']);
+        Route::put('/{id}/reject', [ReturnController::class, 'reject']);
+        Route::post('/{id}/process', [ReturnController::class, 'process']);
+        Route::delete('/{id}', [ReturnController::class, 'destroy']);
     });
 });
