@@ -19,6 +19,8 @@ use App\Http\Controllers\Api\Purchase\PurchaseController;
 use App\Http\Controllers\Api\Expense\ExpenseController;
 use App\Http\Controllers\Api\Return\ReturnController;
 use App\Http\Controllers\Api\Notification\NotificationController;
+use App\Http\Controllers\Api\Report\ReportController;
+use App\Http\Controllers\Api\Dashboard\DashboardController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes (Public)
@@ -242,5 +244,33 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/{id}', [NotificationController::class, 'show']);
         Route::put('/{id}/read', [NotificationController::class, 'markAsRead']);
         Route::delete('/{id}', [NotificationController::class, 'destroy']);
+    });
+
+    // Reports Routes
+    Route::prefix('reports')->group(function () {
+        // Sales Reports
+        Route::get('/sales', [ReportController::class, 'sales']);
+        Route::get('/sales/daily', [ReportController::class, 'dailySales']);
+        Route::get('/sales/monthly', [ReportController::class, 'monthlySales']);
+        Route::get('/sales/by-product', [ReportController::class, 'salesByProduct']);
+        Route::get('/sales/by-employee', [ReportController::class, 'salesByEmployee']);
+
+        // Inventory Reports
+        Route::get('/inventory', [ReportController::class, 'inventory']);
+        Route::get('/inventory/low-stock', [ReportController::class, 'lowStock']);
+        Route::get('/inventory/movements', [ReportController::class, 'inventoryMovements']);
+
+        // Financial Reports
+        Route::get('/financial/profit-loss', [ReportController::class, 'profitLoss']);
+        Route::get('/financial/revenue', [ReportController::class, 'revenue']);
+        Route::get('/financial/expenses', [ReportController::class, 'expenses']);
+    });
+
+    // Dashboard Routes
+    Route::prefix('dashboard')->group(function () {
+        Route::get('/stats', [DashboardController::class, 'stats']);
+        Route::get('/sales-today', [DashboardController::class, 'salesToday']);
+        Route::get('/top-products', [DashboardController::class, 'topProducts']);
+        Route::get('/top-customers', [DashboardController::class, 'topCustomers']);
     });
 });
