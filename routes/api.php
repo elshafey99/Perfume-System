@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\Customer\CustomerController;
 use App\Http\Controllers\Api\Purchase\PurchaseController;
 use App\Http\Controllers\Api\Expense\ExpenseController;
 use App\Http\Controllers\Api\Return\ReturnController;
+use App\Http\Controllers\Api\Notification\NotificationController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes (Public)
@@ -229,5 +230,17 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::put('/{id}/reject', [ReturnController::class, 'reject']);
         Route::post('/{id}/process', [ReturnController::class, 'process']);
         Route::delete('/{id}', [ReturnController::class, 'destroy']);
+    });
+
+    // Notifications Routes
+    Route::prefix('notifications')->group(function () {
+        Route::get('/', [NotificationController::class, 'index']);
+        Route::get('/unread', [NotificationController::class, 'unread']);
+        Route::get('/low-stock', [NotificationController::class, 'lowStock']);
+        Route::post('/check-low-stock', [NotificationController::class, 'checkLowStock']);
+        Route::put('/read-all', [NotificationController::class, 'markAllAsRead']);
+        Route::get('/{id}', [NotificationController::class, 'show']);
+        Route::put('/{id}/read', [NotificationController::class, 'markAsRead']);
+        Route::delete('/{id}', [NotificationController::class, 'destroy']);
     });
 });
