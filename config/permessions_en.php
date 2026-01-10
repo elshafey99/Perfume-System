@@ -96,6 +96,11 @@ return [
     'sales.add-items'                  => 'Add Items to Invoice',
     'sales.remove-items'               => 'Remove Items from Invoice',
     'sales.record-payment'             => 'Record Payment',
+    'sales.quick-sale'                 => 'Quick Sale',
+    'sales.composition-sale'           => 'Composition Sale',
+    'sales.custom-blend'               => 'Custom Blend Sale',
+    'sales.refund'                     => 'Refund Invoice',
+    'sales.apply-discount'             => 'Apply Discount',
 
     'purchases'                        => 'Purchase Management',
     'purchases.view'                   => 'View Purchases',
@@ -111,6 +116,7 @@ return [
     'returns.delete'                   => 'Delete Return',
     'returns.approve'                  => 'Approve Return',
     'returns.reject'                   => 'Reject Return',
+    'returns.process'                  => 'Process Return',
     'returns.statistics'               => 'View Return Statistics',
 
     // ==========================================

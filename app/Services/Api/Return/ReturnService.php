@@ -129,7 +129,7 @@ class ReturnService
                     ->sum('return_amount');
 
                 // Calculate remaining item amount
-                $remainingItemAmount = $saleItem->total_price - $existingItemReturnAmount;
+                $remainingItemAmount = $saleItem->total - $existingItemReturnAmount;
 
                 // Auto-set return amount to remaining item total if not provided
                 if (!isset($data['return_amount']) || $data['return_amount'] === null) {

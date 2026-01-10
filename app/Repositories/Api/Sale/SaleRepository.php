@@ -96,6 +96,11 @@ class SaleRepository
                 $data['sale_date'] = now();
             }
 
+            // Set employee_id from authenticated user if not provided
+            if (empty($data['employee_id'])) {
+                $data['employee_id'] = auth()->id();
+            }
+
             // Extract items before creating sale
             $items = $data['items'] ?? [];
             unset($data['items']);
@@ -645,7 +650,8 @@ class SaleRepository
     public function compositionSale(array $data): Sale
     {
         return DB::transaction(function () use ($data) {
-            $composition = Composition::find($data['composition_id']);
+            // Lock the composition to prevent race conditions
+            $composition = Composition::lockForUpdate()->find($data['composition_id']);
             
             if (!$composition) {
                 throw new \Exception('Composition not found');
@@ -722,7 +728,8 @@ class SaleRepository
             $itemsData = [];
 
             foreach ($ingredients as $ingredient) {
-                $product = Product::find($ingredient['product_id']);
+                // Lock the product to prevent race conditions
+                $product = Product::lockForUpdate()->find($ingredient['product_id']);
                 if (!$product) {
                     continue;
                 }

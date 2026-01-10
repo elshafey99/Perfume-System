@@ -96,6 +96,11 @@ return [
     'sales.add-items'                  => 'إضافة عناصر للفاتورة',
     'sales.remove-items'               => 'حذف عناصر من الفاتورة',
     'sales.record-payment'             => 'تسجيل دفعة',
+    'sales.quick-sale'                 => 'البيع السريع',
+    'sales.composition-sale'           => 'بيع التركيبات',
+    'sales.custom-blend'               => 'بيع الخلطات المخصصة',
+    'sales.refund'                     => 'استرجاع الفاتورة',
+    'sales.apply-discount'             => 'تطبيق الخصم',
 
     'purchases'                        => 'إدارة المشتريات',
     'purchases.view'                   => 'عرض المشتريات',
@@ -111,6 +116,7 @@ return [
     'returns.delete'                   => 'حذف مرتجع',
     'returns.approve'                  => 'الموافقة على المرتجع',
     'returns.reject'                   => 'رفض المرتجع',
+    'returns.process'                  => 'معالجة المرتجع',
     'returns.statistics'               => 'عرض إحصائيات المرتجعات',
 
     // ==========================================
