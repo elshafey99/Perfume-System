@@ -32,6 +32,9 @@ Route::prefix('auth')->group(function () {
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
 });
 
+
+     Route::get('users', [UserController::class, 'index']);
+
 // Protected Routes
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::prefix('auth')->group(function () {
@@ -69,7 +72,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
 
     // Users Routes (Employees & Admins)
     Route::prefix('users')->group(function () {
-        Route::get('/', [UserController::class, 'index']);
+       // Route::get('/', [UserController::class, 'index']);
         Route::post('/', [UserController::class, 'store']);
         Route::get('/{id}', [UserController::class, 'show']);
         Route::post('/{id}', [UserController::class, 'update']);
