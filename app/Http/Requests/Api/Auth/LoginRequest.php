@@ -24,8 +24,8 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'email', 'max:255'],
-            'password' => ['required', 'string', 'min:6'],
+            'username' => ['required', 'string', 'max:255'],
+            'password' => ['required', 'string', 'min:2'],
         ];
     }
 
@@ -37,10 +37,10 @@ class LoginRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'email.required' => __('validation.required', ['attribute' => __('auth.email')]),
-            'email.email' => __('validation.email', ['attribute' => __('auth.email')]),
+            'username.required' => __('validation.required', ['attribute' => 'اسم المستخدم']),
+            'username.string' => __('validation.string', ['attribute' => 'اسم المستخدم']),
             'password.required' => __('validation.required', ['attribute' => __('auth.password')]),
-            'password.min' => __('validation.min.string', ['attribute' => __('auth.password'), 'min' => 6]),
+            'password.min' => __('validation.min.string', ['attribute' => __('auth.password'), 'min' => 2]),
         ];
     }
 

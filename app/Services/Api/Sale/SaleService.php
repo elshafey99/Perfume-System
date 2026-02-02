@@ -91,6 +91,23 @@ class SaleService
     public function create(array $data): array
     {
         try {
+            // Auto-fill tax_rate from settings if not provided
+            if (!isset($data['tax_rate'])) {
+                $settings = \App\Models\Setting::first();
+                $data['tax_rate'] = $settings->default_tax_rate ?? 0;
+            }
+
+            // Auto-fill discount from settings if not provided
+            if (!isset($data['discount']) && !isset($data['discount_rate'])) {
+                $settings = $settings ?? \App\Models\Setting::first();
+                $defaultDiscountRate = $settings->default_discount_rate ?? 0;
+                
+                // If there's a default discount rate and discount type is percentage, calculate discount
+                if ($defaultDiscountRate > 0 && isset($data['discount_type']) && $data['discount_type'] === 'percentage') {
+                    $data['discount_rate'] = $defaultDiscountRate;
+                }
+            }
+
             // Validate stock availability for all items
             if (isset($data['items'])) {
                 foreach ($data['items'] as $item) {

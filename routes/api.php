@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\Supplier\SupplierController;
 use App\Http\Controllers\Api\UnitType\UnitTypeController;
 use App\Http\Controllers\Api\ProductType\ProductTypeController;
 use App\Http\Controllers\Api\Product\ProductController;
+use App\Http\Controllers\Api\Product\ProductPrintController;
 use App\Http\Controllers\Api\InventoryTransaction\InventoryTransactionController;
 use App\Http\Controllers\Api\Stocktaking\StocktakingController;
 use App\Http\Controllers\Api\Composition\CompositionController;
@@ -21,6 +22,8 @@ use App\Http\Controllers\Api\Return\ReturnController;
 use App\Http\Controllers\Api\Notification\NotificationController;
 use App\Http\Controllers\Api\Report\ReportController;
 use App\Http\Controllers\Api\Dashboard\DashboardController;
+use App\Http\Controllers\Api\Setting\SettingController;
+use App\Http\Controllers\Api\DailyClosing\DailyClosingController;
 use Illuminate\Support\Facades\Route;
 
 // Auth Routes (Public)
@@ -88,6 +91,12 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::put('/{id}', [SupplierController::class, 'update']);
         Route::patch('/{id}', [SupplierController::class, 'update']);
         Route::delete('/{id}', [SupplierController::class, 'destroy']);
+        
+        // Supplier Payments Routes
+        Route::get('/{id}/payments', [SupplierController::class, 'getPayments']);
+        Route::post('/{id}/payments', [SupplierController::class, 'addPayment']);
+        Route::get('/{id}/statement', [SupplierController::class, 'getStatement']);
+        Route::get('/{id}/balance', [SupplierController::class, 'getBalance']);
     });
 
     // Unit Types Routes
@@ -121,6 +130,10 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::patch('/{id}', [ProductController::class, 'update']);
         Route::put('/{id}/stock', [ProductController::class, 'updateStock']);
         Route::delete('/{id}', [ProductController::class, 'destroy']);
+        
+        // QR Code & Print Routes
+        Route::get('/{id}/qr-code', [ProductPrintController::class, 'generateQRCode']);
+        Route::get('/{id}/print-label', [ProductPrintController::class, 'printLabel']);
     });
 
     // Inventory Transactions Routes
@@ -275,5 +288,18 @@ Route::middleware(['auth:sanctum'])->group(function () {
         Route::get('/sales-today', [DashboardController::class, 'salesToday']);
         Route::get('/top-products', [DashboardController::class, 'topProducts']);
         Route::get('/top-customers', [DashboardController::class, 'topCustomers']);
+    });
+
+    // Settings Routes
+    Route::get('/settings', [SettingController::class, 'index']);
+    Route::post('/settings', [SettingController::class, 'update']);
+
+    // Daily Closings Routes
+    Route::prefix('daily-closings')->group(function () {
+        Route::get('/', [DailyClosingController::class, 'index']);
+        Route::post('/', [DailyClosingController::class, 'store']);
+        Route::get('/today', [DailyClosingController::class, 'today']);
+        Route::get('/{id}', [DailyClosingController::class, 'show']);
+        Route::get('/date/{date}', [DailyClosingController::class, 'getByDate']);
     });
 });

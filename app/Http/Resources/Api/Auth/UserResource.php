@@ -23,6 +23,7 @@ class UserResource extends JsonResource
             'type' => $this->type,
             'position' => $this->position,
             'status' => $this->status,
+            'username' => $this->username,
             'role' => $this->whenLoaded('role', function () {
                 return [
                     'id' => $this->role->id,

@@ -167,7 +167,13 @@ class SaleRepository
             $product = Product::find($itemData['product_id']);
             if ($product) {
                 $itemData['product_name'] = $itemData['product_name'] ?? $product->name;
-                $itemData['unit_price'] = $itemData['unit_price'] ?? $product->selling_price;
+                
+                // Handle is_open_price products
+                if ($product->is_open_price && isset($itemData['custom_price'])) {
+                    $itemData['unit_price'] = $itemData['custom_price'];
+                } else {
+                    $itemData['unit_price'] = $itemData['unit_price'] ?? $product->selling_price;
+                }
             }
         } elseif (!empty($itemData['composition_id'])) {
             $composition = Composition::find($itemData['composition_id']);

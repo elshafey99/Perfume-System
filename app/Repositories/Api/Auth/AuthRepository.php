@@ -17,11 +17,19 @@ class AuthRepository
     }
 
     /**
+     * Find user by username
+     */
+    public function findByUsername(string $username): ?User
+    {
+        return User::where('username', $username)->first();
+    }
+
+    /**
      * Verify user credentials
      */
-    public function verifyCredentials(string $email, string $password): ?User
+    public function verifyCredentials(string $username, string $password): ?User
     {
-        $user = $this->findByEmail($email);
+        $user = $this->findByUsername($username);
 
         if (!$user || !Hash::check($password, $user->password)) {
             return null;

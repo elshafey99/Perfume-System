@@ -58,6 +58,7 @@ class ProductResource extends JsonResource
             'is_composition' => $this->is_composition,
             'is_active' => $this->is_active,
             'can_return' => $this->can_return,
+            'is_open_price' => $this->is_open_price, // Indicates if custom price is required
             'supplier_id' => $this->supplier_id,
             'supplier' => $this->whenLoaded('supplier', function () {
                 return [

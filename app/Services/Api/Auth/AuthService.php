@@ -19,9 +19,9 @@ class AuthService
     /**
      * Login user
      */
-    public function login(string $email, string $password): array
+    public function login(string $username, string $password): array
     {
-        $user = $this->authRepository->verifyCredentials($email, $password);
+        $user = $this->authRepository->verifyCredentials($username, $password);
 
         if (!$user) {
             return [

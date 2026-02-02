@@ -5,6 +5,8 @@ namespace App\Services\Api\Composition;
 use App\Repositories\Api\Composition\CompositionRepository;
 use App\Models\Composition;
 use App\Models\CompositionIngredient;
+use App\Models\Product;
+use App\Models\InventoryTransaction;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class CompositionService
@@ -78,6 +80,28 @@ class CompositionService
 
             // Create composition with ingredients
             $composition = $this->compositionRepository->createWithIngredients($data, $ingredients);
+
+            // Deduct ingredients from inventory
+            foreach ($ingredients as $ingredientData) {
+                $product = Product::find($ingredientData['ingredient_product_id']);
+                
+                if ($product) {
+                    $quantity = (float) $ingredientData['quantity'];
+                    
+                    // Decrement product stock
+                    $product->decrement('current_stock', $quantity);
+                    
+                    // Create inventory transaction record
+                    InventoryTransaction::create([
+                        'product_id' => $product->id,
+                        'type' => 'out',
+                        'quantity' => $quantity,
+                        'reference_type' => 'composition',
+                        'reference_id' => $composition->id,
+                        'notes' => "خصم لتركيبة: {$composition->name}",
+                    ]);
+                }
+            }
 
             return [
                 'success' => true,

@@ -60,6 +60,29 @@ class PurchaseService
         try {
             $purchase = $this->purchaseRepository->create($data);
 
+            // Auto-create supplier payment records
+            \App\Models\SupplierPayment::create([
+                'supplier_id' => $purchase->supplier_id,
+                'type' => 'purchase',
+                'amount' => $purchase->total,
+                'payment_date' => $purchase->purchase_date,
+                'notes' => "فاتورة شراء رقم: {$purchase->invoice_number}",
+                'created_by' => auth()->id(),
+            ]);
+
+            // If purchase is fully paid, create payment record
+            if ($purchase->payment_status === 'paid') {
+                \App\Models\SupplierPayment::create([
+                    'supplier_id' => $purchase->supplier_id,
+                    'type' => 'payment',
+                    'amount' => $purchase->total,
+                    'payment_method' => $purchase->payment_method ?? 'cash',
+                    'payment_date' => $purchase->purchase_date,
+                    'notes' => "دفعة لفاتورة شراء رقم: {$purchase->invoice_number}",
+                    'created_by' => auth()->id(),
+                ]);
+            }
+
             return [
                 'success' => true,
                 'data' => $purchase,

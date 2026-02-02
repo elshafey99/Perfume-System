@@ -45,6 +45,7 @@ class StoreProductRequest extends FormRequest
             'is_composition' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
             'can_return' => ['nullable', 'boolean'],
+            'is_open_price' => ['nullable', 'boolean'], // Allow custom pricing
             'supplier_id' => ['nullable', 'integer', 'exists:suppliers,id'],
         ];
     }
@@ -55,7 +56,7 @@ class StoreProductRequest extends FormRequest
     protected function prepareForValidation(): void
     {
         // Convert string boolean to actual boolean for form-data
-        $booleanFields = ['is_raw_material', 'is_composition', 'is_active', 'can_return'];
+        $booleanFields = ['is_raw_material', 'is_composition', 'is_active', 'can_return', 'is_open_price'];
         foreach ($booleanFields as $field) {
             if ($this->has($field)) {
                 $this->merge([

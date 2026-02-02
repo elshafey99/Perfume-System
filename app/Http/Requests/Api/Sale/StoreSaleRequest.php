@@ -38,6 +38,7 @@ class StoreSaleRequest extends FormRequest
             'items.*.quantity' => ['required', 'numeric', 'min:0.0001'],
             'items.*.unit' => ['required', 'in:piece,gram,ml,tola,quarter_tola'],
             'items.*.unit_price' => ['nullable', 'numeric', 'min:0'],
+            'items.*.custom_price' => ['nullable', 'numeric', 'min:0'], // For open_price products
             'items.*.is_custom_blend' => ['nullable', 'boolean'],
             'items.*.notes' => ['nullable', 'string', 'max:500'],
         ];
