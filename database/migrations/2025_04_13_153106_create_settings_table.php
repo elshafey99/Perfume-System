@@ -25,6 +25,7 @@ return new class extends Migration
             // $table->text('about_us')->nullable();
             // $table->text('meta_desc');
             $table->text('logo');
+            $table->text('logo_receipt')->nullable();
             $table->text('favicon');
             $table->text('site_copyright');
             //$table->text('promotion_url');

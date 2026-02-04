@@ -40,6 +40,7 @@ class UpdateSettingRequest extends FormRequest
             
             // Images
             'logo' => ['sometimes', 'nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp,svg', 'max:2048'],
+            'logo_receipt' => ['sometimes', 'nullable', 'image', 'mimes:jpeg,png,jpg,gif,webp,svg', 'max:2048'],
             'favicon' => ['sometimes', 'nullable', 'image', 'mimes:ico,png', 'max:512'],
             
             // Other

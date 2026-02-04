@@ -79,6 +79,7 @@ return [
     'update-brand' => 'تعديل العلامة التجارية',
     'products_count' => 'عدد المنتجات ',
     'logo' => 'الهوية',
+    'logo_receipt' => 'لوجو الفاتورة',
     'old-logo' => 'الهوية القديمة',
     'gove-count' => 'عدد المحافظات',
     'users-count' => 'عدد المستخدمين',

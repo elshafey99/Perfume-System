@@ -29,6 +29,7 @@ class Setting extends Model
         // 'youtube',
         // 'meta_desc',
         'logo',
+        'logo_receipt',
         'favicon',
         'site_copyright',
         // 'promotion_url',

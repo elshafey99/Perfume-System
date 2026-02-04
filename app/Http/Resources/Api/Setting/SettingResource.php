@@ -18,6 +18,7 @@ class SettingResource extends JsonResource
             'site_phone' => $this->site_phone,
             'site_address' => $this->site_address,
             'logo' => $this->logo ? asset($this->logo) : null,
+            'logo_receipt' => $this->logo_receipt ? asset($this->logo_receipt) : null,
             'favicon' => $this->favicon ? asset($this->favicon) : null,
             'site_copyright' => $this->site_copyright,
             

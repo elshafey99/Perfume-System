@@ -57,6 +57,19 @@ class SettingService
                 unset($data['logo']);
             }
 
+            // Handle logo_receipt upload using FileHelper
+            if (isset($data['logo_receipt']) && $data['logo_receipt'] instanceof \Illuminate\Http\UploadedFile) {
+                $logoReceiptPath = FileHelper::uploadImage(
+                    $data['logo_receipt'],
+                    'uploads/images',
+                    $settings->logo_receipt // Old file path to delete
+                );
+                $data['logo_receipt'] = $logoReceiptPath;
+            } else {
+                // Remove from update if not uploaded
+                unset($data['logo_receipt']);
+            }
+
             // Handle favicon upload using FileHelper
             if (isset($data['favicon']) && $data['favicon'] instanceof \Illuminate\Http\UploadedFile) {
                 $faviconPath = FileHelper::uploadImage(

@@ -43,6 +43,10 @@ class SettingController extends Controller
             $data['logo'] = $request->file('logo');
         }
         
+        if ($request->hasFile('logo_receipt')) {
+            $data['logo_receipt'] = $request->file('logo_receipt');
+        }
+        
         if ($request->hasFile('favicon')) {
             $data['favicon'] = $request->file('favicon');
         }

@@ -129,6 +129,24 @@
             </div>
             <div class="col-6">
                 <div class="col-sm-6">
+                    <label class="col-form-label">{{ __('dashboard.logo_receipt') }}</label>
+                </div>
+                <div class="form-group">
+                    @if (isset($logo_receipt) && is_object($logo_receipt))
+                        <img src="{{ $logo_receipt->temporaryUrl() }}" width="150" class="wd-80 ">
+                    @else
+                        <img src="{{ asset($logo_receipt) }}" width="150" class="wd-80 ">
+                    @endif
+                </div>
+                <div class="col-sm-9">
+                    <input type="file" class="form-control" wire:model="logo_receipt">
+                    @include('dashboard.includes.error', ['property' => 'logo_receipt'])
+                </div>
+            </div>
+        </div>
+        <div class="row mb-2">
+            <div class="col-6">
+                <div class="col-sm-6">
                     <label class="col-form-label">{{ __('dashboard.site-favicon') }}</label>
                 </div>
                 <div class="form-group">

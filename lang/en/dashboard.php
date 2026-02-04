@@ -79,6 +79,7 @@ return [
     'update-brand' => 'Update Brand',
     'products_count' => 'Products Count',
     'logo' => 'Logo',
+    'logo_receipt' => 'Receipt Logo',
     'old-logo' => 'Old Logo',
     'gove-count' => 'Governorates Count',
     'users-count' => 'Users Count',

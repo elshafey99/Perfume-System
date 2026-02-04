@@ -14,7 +14,7 @@ class UpdateSettings extends Component
     protected $listeners = ['refresh'];
     public $settings, $site_name_ar, $site_name, $site_desc_ar, $site_desc, $site_phone,
         $site_address_ar, $site_address, $promotion_url, $site_email, $email_support,
-        $facebook, $x_url, $youtube, $meta_desc, $meta_desc_ar, $logo, $favicon, $site_copyright ,
+        $facebook, $x_url, $youtube, $meta_desc, $meta_desc_ar, $logo, $logo_receipt, $favicon, $site_copyright ,
         $about_ar, $about_en ;
     public function mount()
     {
@@ -37,6 +37,7 @@ class UpdateSettings extends Component
         $this->meta_desc_ar        = $this->settings->getTranslation('meta_desc', 'ar');
         $this->meta_desc           = $this->settings->getTranslation('meta_desc', 'en');
         $this->logo                = $this->settings->logo;
+        $this->logo_receipt        = $this->settings->logo_receipt;
         $this->favicon             = $this->settings->favicon;
         $this->site_copyright      = $this->settings->site_copyright;
         $this->promotion_url       = $this->settings->promotion_url;
@@ -71,6 +72,11 @@ class UpdateSettings extends Component
         } else {
             $rules['logo'] = ['nullable'];
         }
+        if ($this->logo_receipt && $this->logo_receipt instanceof TemporaryUploadedFile) {
+            $rules['logo_receipt'] = ['image', 'mimes:jpg,jpeg,png,gif'];
+        } else {
+            $rules['logo_receipt'] = ['nullable'];
+        }
         if ($this->favicon && $this->favicon instanceof TemporaryUploadedFile) {
             $rules['favicon'] = ['image', 'mimes:jpg,jpeg,png,gif'];
         } else {
@@ -95,6 +101,16 @@ class UpdateSettings extends Component
             $logoName = uniqid() . '_' . $this->logo->getClientOriginalName();
             $this->logo->storePubliclyAs('uploads/settings', $logoName, 'public');
             $this->settings->logo = 'uploads/settings/' . $logoName;
+        }
+        if ($this->logo_receipt instanceof UploadedFile && $this->logo_receipt->isValid()) {
+            // === Delete The Old Image If It Exists
+            if ($this->settings->logo_receipt && file_exists(public_path($this->settings->logo_receipt))) {
+                unlink(public_path($this->settings->logo_receipt));
+            }
+            // === Save New Image In Folder Uploads
+            $logoReceiptName = uniqid() . '_' . $this->logo_receipt->getClientOriginalName();
+            $this->logo_receipt->storePubliclyAs('uploads/settings', $logoReceiptName, 'public');
+            $this->settings->logo_receipt = 'uploads/settings/' . $logoReceiptName;
         }
         if ($this->favicon instanceof UploadedFile && $this->favicon->isValid()) {
             // === Delete The Old Image If It Exists
